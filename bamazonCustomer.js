@@ -42,7 +42,7 @@ function promptUser () {
 
         {
             name: 'Product Quantity',
-            type: 'input',
+            type: 'quantityChoice',
             message: "How many units of this product would you like to buy?"
         }
 
@@ -51,12 +51,12 @@ function promptUser () {
     .then(function(item_id){
             connection.query("SELECT * from products WHERE item_id=?", option.item_id, function(err,res){
                 if(err) throw err
-                else if(item_id.input > res[i].stock_quantity){
-                    console.log("Insufficient Quantity, please enter another ID")
+                else if(item_id.quantityChoice > res[i].stock_quantity){
+                    console.log("Insufficient Quantity, please try another product")
                 }
-                else {
-                    console.log("Please enter a valid ID")
-                }
+               else if(item_id.quantityChoice < res[i].stock_quantity){
+                    console.log("Ok the price of this item is:" + res[i].price)
+               }
             })
         })
     }
