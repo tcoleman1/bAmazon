@@ -1,0 +1,2 @@
+This project uses Node.js and MySQL.
+The goal of this assignment is to create an Amazon like storefront that allows users to enter information (id) about the products available in the storefront. The app will take in orders from customers and deplete stock from the store's inventory (DB).
