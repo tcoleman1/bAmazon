@@ -51,7 +51,7 @@ function promptUser () {
     .then(function(item_id){
             connection.query("SELECT * from products WHERE item_id=?", option.item_id, function(err,res){
                 if(err) throw err
-                else if(item_id.input > res[0].stock_quantity){
+                else if(item_id.input > res[i].stock_quantity){
                     console.log("Insufficient Quantity, please enter another ID")
                 }
                 else {
