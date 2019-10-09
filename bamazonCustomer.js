@@ -14,21 +14,21 @@ connection.connect(function (err){
     getItems();
 });
 
-// include id, name and prices of products for sale
 function getItems() {
      connection.query('SELECT * FROM products', function(err,res){
     if (err) throw err;
     for (var i=0; i<res.length; i++){
         // console.log('Below you will find the list of items left' + res[i].item_id + '|' + res[i].product_name);
-        console.log('Below you will find the list of items left' + 
-        `${res[i].item_id}
-        ${res[i].product_name}
+        console.log('Below you will find the list of items in our inventory:' ,
+        'Item Id:' + `${res[i].item_id}
+     ${res[i].product_name}
         ${res[i].price}`);
     }
 })
 // connection.end()
-promptUser();
+
 }
+promptUser();
 
 function promptUser () {
     inquirer
@@ -38,19 +38,29 @@ function promptUser () {
         type: 'input',
         message: "Please Enter the ID of the product you'd like to buy",
         
+        },
+
+        {
+            name: 'Product Quantity',
+            type: 'input',
+            message: "How many units of this product would you like to buy?"
         }
-    ]), {
-        name: 'Product Quantity',
-        type: 'input',
-        message: "How many units of this product would you like to buy?"
+
+    ])
+ 
+    .then(function(item_id){
+            connection.query("SELECT * from products WHERE item_id=?", option.item_id, function(err,res){
+                if(err) throw err
+                else if(item_id.input > res[0].stock_quantity){
+                    console.log("Insufficient Quantity, please enter another ID")
+                }
+                else {
+                    console.log("Please enter a valid ID")
+                }
+            })
+        })
     }
-
-    connection.query(`Select * from products WHERE item_id=`${item_id}`)
-
-}
-
-
-
+    
 
 
 
