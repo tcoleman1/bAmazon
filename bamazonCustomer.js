@@ -10,7 +10,6 @@ const connection = mysql.createConnection({
 
 connection.connect(function (err){
     if(err) throw err;
-    console.log('connected');
     getItems();
 });
 
@@ -18,7 +17,7 @@ function getItems() {
      connection.query('SELECT * FROM products', function(err,res){
     if (err) throw err;
     for (var i=0; i<res.length; i++){
-        // console.log('Below you will find the list of items left' + res[i].item_id + '|' + res[i].product_name);
+        
         console.log(`---------------------------
       PRODUCT ID:      ${res[i].item_id}
      PRODUCT NAME:    ${res[i].product_name}
@@ -26,7 +25,6 @@ function getItems() {
     }
     promptUser();
 })
-// connection.end()
 
 }
 
@@ -50,9 +48,6 @@ function promptUser () {
     ])
  
     .then(function(option){
-       // console.log(option)
-        
-        console.log("We've reached this point")
           ///  connection.query("SELECT * from products WHERE item_id=${option.productID}", function(res,err){
               connection.query("SELECT * from products WHERE item_id=?", [
 
@@ -60,37 +55,36 @@ function promptUser () {
               ], 
                 
             function(err,res){
-                console.log(res)
-                console.log(err)
-               console.log('This is my prod id:' + option.productID)
+
                 if(err) throw err
-                console.log(res[0].stock_quantity)
-                if(res[0].stock_quantity > parseInt(option.productQuantity)){
+
+                if(res[0].stock_quantity < parseInt(option.productQuantity)){
                     console.log("Insufficient Quantity, please try another product")
+                    tryAgain();
                 }
-               else if(option.quantityChoice <= res[0].stock_quantity){
-                   let totalCost = res[0].price * option.productQuantity
-                 // console.log("Ok the price of this item is:" + "$"+ totalCost +
-                   // ".Thank you for shopping with us");
-                    connection.query(`UPDATE products SET stock_quantity = "${res[0].stock_quantity - parseInt(option.productQuantity)}" WHERE item_id=${parseInt(option.productID)}`, function(err,res){
+               else { //(option.quantityChoice <= res[i].stock_quantity)
+               
 
-                     if (err) throw err;
-                    console.log("Ok the price of this item is:" + "$"+ totalCost + ".Thank you for shopping with us");
-                    })
-               }
+                   const totalCost = (res[0].price * option.productQuantity).toFixed(2)
+            
+                  //  connection.query(`UPDATE products SET stock_quantity = "${res[0].stock_quantity - parseInt(option.productQuantity)}" WHERE item_id=${parseInt(option.productID)}`, function(err,res){
+
+                    console.log("The price of this item is: " + "$ "+ totalCost + " Thank you for shopping with us");
+                    }
+               })
             })
-        })
-    }
+        }
     
-
-
-
-
-
-
-
-
-
-
-
-
+    
+function tryAgain(){
+    inquirer.prompt([
+        {
+            name: "tryAnotherItem",
+            message: "Would you like to try another item?",
+            type: "list",
+            choices: ["yes", "no"]
+        
+        }
+    ])
+        option.tryAnotherItem === "yes" ? promptUser() : connection.end()
+}
