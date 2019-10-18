@@ -59,7 +59,9 @@ function promptUser() {
                     if (err) throw err
 
                     if (res[0].stock_quantity < parseInt(option.productQuantity)) {
+
                         console.log("Insufficient Quantity, please try another product")
+                
                         tryAgain();
                     }
                     else { //(option.quantityChoice <= res[i].stock_quantity)
@@ -87,7 +89,7 @@ function promptUser() {
                         console.log("The price of this item is: " + "$ " + totalCost + " Thank you for shopping with us");
 
 
-                            console.log( "Led ring lights should have quantity of 19", res[0].stock_quantity)
+                            console.log( "New stock quantity", newStockQuantity)
                         // the lines below shows the id and new quantity 
                        // connection.query("UPDATE products SET stock_quantity=" + newStockQuantity + "WHERE item_id=?", [
                           //  option.productID
