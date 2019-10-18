@@ -8,101 +8,129 @@ const connection = mysql.createConnection({
     database: 'bamazon'
 });
 
-connection.connect(function (err){
-    if(err) throw err;
+connection.connect(function (err) {
+    if (err) throw err;
     getItems();
 });
 
 function getItems() {
-     connection.query('SELECT * FROM products', function(err,res){
-    if (err) throw err;
-    for (var i=0; i<res.length; i++){
-        
-        console.log(`---------------------------
+    connection.query('SELECT * FROM products', function (err, res) {
+        if (err) throw err;
+        for (var i = 0; i < res.length; i++) {
+
+            console.log(`---------------------------
       PRODUCT ID:      ${res[i].item_id}
      PRODUCT NAME:    ${res[i].product_name}
      PRODUCT PRICE:   ${res[i].price}`);
-    }
-    promptUser();
-})
+        }
+        promptUser();
+    })
 
 }
 
 
-function promptUser () {
+function promptUser() {
     inquirer
-    .prompt([
-        {
-        name: 'productID',
-        type: 'input',
-        message: "Please Enter the ID of the product you'd like to buy",
-        
-        },
+        .prompt([
+            {
+                name: 'productID',
+                type: 'input',
+                message: "Please Enter the ID of the product you'd like to buy",
 
-        {
-            name: 'productQuantity',
-            type: 'input',
-            message: "How many units of this product would you like to buy?"
-        }
+            },
 
-    ])
- 
-    .then(function(option){
-          ///  connection.query("SELECT * from products WHERE item_id=${option.productID}", function(res,err){
-              connection.query("SELECT * from products WHERE item_id=?", [
+            {
+                name: 'productQuantity',
+                type: 'input',
+                message: "How many units of this product would you like to buy?"
+            }
 
-                    option.productID
-              ], 
-                
-            function(err,res){
+        ])
 
-                if(err) throw err
+        .then(function (option) {
+            ///  connection.query("SELECT * from products WHERE item_id=${option.productID}", function(res,err){
+            connection.query("SELECT * from products WHERE item_id=?", [
 
-                if(res[0].stock_quantity < parseInt(option.productQuantity)){
-                    console.log("Insufficient Quantity, please try another product")
-                    tryAgain();
-                }
-               else { //(option.quantityChoice <= res[i].stock_quantity)
-               
+                option.productID
+            ],
 
-                   const totalCost = (res[0].price * option.productQuantity).toFixed(2)
-            
-                  //  connection.query(`UPDATE products SET stock_quantity = "${res[0].stock_quantity - parseInt(option.productQuantity)}" WHERE item_id=${parseInt(option.productID)}`, function(err,res){
+                function (err, res) {
 
-                    console.log("The price of this item is: " + "$ "+ totalCost + " Thank you for shopping with us");
+                    if (err) throw err
 
-                    updateDb();
+                    if (res[0].stock_quantity < parseInt(option.productQuantity)) {
+                        console.log("Insufficient Quantity, please try another product")
+                        tryAgain();
                     }
-               })
-            })
-        }
-    
-    
-function tryAgain(){
+                    else { //(option.quantityChoice <= res[i].stock_quantity)
+
+
+                        const totalCost = (res[0].price * option.productQuantity).toFixed(2)
+                        const newStockQuantity = res[0].stock_quantity - parseInt(option.productQuantity)
+
+                        //  connection.query(`UPDATE products SET stock_quantity = "${res[0].stock_quantity - parseInt(option.productQuantity)}" WHERE item_id=${parseInt(option.productID)}`, function(err,res){
+
+
+
+                        connection.query("UPDATE products SET ? WHERE ? ", [{
+
+                            stock_quantity: newStockQuantity
+
+                        }, {
+                            item_id: option.productID
+                        }], function(err,res){
+
+                            console.log("Inventory Updated")
+                        })
+
+
+                        console.log("The price of this item is: " + "$ " + totalCost + " Thank you for shopping with us");
+
+
+                            console.log( "Led ring lights should have quantity of 19", res[0].stock_quantity)
+                        // the lines below shows the id and new quantity 
+                       // connection.query("UPDATE products SET stock_quantity=" + newStockQuantity + "WHERE item_id=?", [
+                          //  option.productID
+                        // ])
+                        //connection.query("UPDATE products SET ? WHERE ?"
+
+                        //   const sql = "UPDATE products SET ? WHERE ?";
+                        //   connection.query(sql, [option.productID, newStockQuantity])
+                        // 
+                        // updateDb();
+                    }
+                })
+        })
+}
+
+
+function tryAgain() {
     inquirer.prompt([
         {
             name: "tryAnotherItem",
             message: "Would you like to try another item?",
             type: "checkbox",
             choices: ["yes", "no"]
-        
+
         }
     ])
-        option.tryAnotherItem === "yes" ? promptUser() : connection.end()
+    option.tryAnotherItem === "yes" ? promptUser() : connection.end()
 }
 
-function updateDb (itemId, stockQuantity) {
+// function updateDb (itemId, stockQuantity) {
 
-connection.query("UPDATE products SET ? WHERE ?",[
-    {
-item_id: itemId
+// connection.query("UPDATE products SET ? WHERE ?",[
+//     {
+// item_id: itemId
 
-    }, 
+//     }, 
 
-    {
-        stock_quantity: stockQuantity
-    }
-]),
+//     {
+//         stock_quantity: stockQuantity
+//     }
+// ]),
 
-console.log("We have updated the inventory")
-}
+// console.log("We have updated the inventory")
+// }
+
+module.exports = connection;
