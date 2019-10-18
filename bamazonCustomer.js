@@ -70,6 +70,8 @@ function promptUser () {
                   //  connection.query(`UPDATE products SET stock_quantity = "${res[0].stock_quantity - parseInt(option.productQuantity)}" WHERE item_id=${parseInt(option.productID)}`, function(err,res){
 
                     console.log("The price of this item is: " + "$ "+ totalCost + " Thank you for shopping with us");
+
+                    updateDb();
                     }
                })
             })
@@ -81,10 +83,26 @@ function tryAgain(){
         {
             name: "tryAnotherItem",
             message: "Would you like to try another item?",
-            type: "list",
+            type: "checkbox",
             choices: ["yes", "no"]
         
         }
     ])
         option.tryAnotherItem === "yes" ? promptUser() : connection.end()
+}
+
+function updateDb (itemId, stockQuantity) {
+
+connection.query("UPDATE products SET ? WHERE ?",[
+    {
+item_id: itemId
+
+    }, 
+
+    {
+        stock_quantity: stockQuantity
+    }
+]),
+
+console.log("We have updated the inventory")
 }
