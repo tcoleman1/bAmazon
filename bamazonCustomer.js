@@ -89,7 +89,7 @@ function promptUser() {
                         console.log("The price of this item is: " + "$ " + totalCost + " Thank you for shopping with us");
 
 
-                            console.log( "New stock quantity", newStockQuantity)
+                         //   console.log( "New stock quantity", newStockQuantity)
                         // the lines below shows the id and new quantity 
                        // connection.query("UPDATE products SET stock_quantity=" + newStockQuantity + "WHERE item_id=?", [
                           //  option.productID
@@ -115,8 +115,20 @@ function tryAgain() {
             choices: ["yes", "no"]
 
         }
-    ])
-    option.tryAnotherItem === "yes" ? promptUser() : connection.end()
+    ]).then(function(option){
+
+       // console.log(option)
+        if(option.tryAnotherItem[0] === "yes"){
+            promptUser();
+        }
+
+        else if (option.tryAnotherItem[0] === "no"){
+            console.log("Thank you have a great day")
+        }
+     //   if(option.tryAnotherItem === "yes"? promptUser() : connection.end())
+   // })
+    //option.tryAnotherItem === "yes" ? promptUser() : connection.end()
+})
 }
 
 // function updateDb (itemId, stockQuantity) {
